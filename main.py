@@ -7,7 +7,7 @@ class PrimitiveRecursive:
         kargs = kargs
         raise NotImplementedError()
 
-class Sucessor(PrimitiveRecursive):
+class Successor(PrimitiveRecursive):
     def __call__(self, x: int) -> int:
         return x+1
 
@@ -99,12 +99,12 @@ def Constant(n: int, k: int) -> PrimitiveRecursive:
     if n == 0:
         if k == 0:
             return ZeroNoArgs()
-        return Composition(Sucessor(), Constant(0, k-1))
+        return Composition(Successor(), Constant(0, k-1))
     if k == 0:
         return Composition(Zero(), Proj(n, 1))
-    return Composition(Sucessor(), Constant(n, k-1))
+    return Composition(Successor(), Constant(n, k-1))
 
-Sum = Ro(Proj(1,1), Composition(Sucessor(), Proj(3,2)))
+Sum = Ro(Proj(1,1), Composition(Successor(), Proj(3,2)))
 assert Sum(3,5) == 8
 
 Pred = Ro(ZeroNoArgs(), Proj(2,1))
@@ -162,13 +162,13 @@ assert Eq(9,8) == 0
 assert Eq(8,8) == 1
 assert Eq(7,8) == 0
 
-Fac = Ro(Constant(0,1), Composition(Mul, Tuple(Composition(Sucessor(), Proj(2,1)), Proj(2,2))))
+Fac = Ro(Constant(0,1), Composition(Mul, Tuple(Composition(Successor(), Proj(2,1)), Proj(2,2))))
 assert Fac(6) == 720
 
 Rest = Ro(Zero(), Composition(If, Tuple(
     Composition(Eq, Tuple(Composition(Pred, Proj(3,3)), Proj(3,2))),
     Constant(3,0),
-    Composition(Sucessor(), Proj(3,2))
+    Composition(Successor(), Proj(3,2))
 )))
 
 for i in range(0, 30):
@@ -176,7 +176,7 @@ for i in range(0, 30):
 
 Div = Ro(Zero(), Composition(If, Tuple(
     Composition(Eq, Tuple(Composition(Pred, Proj(3,3)), Composition(Rest, Tuple(Proj(3,1), Proj(3,3))))),
-    Composition(Sucessor(), Proj(3,2)),
+    Composition(Successor(), Proj(3,2)),
     Proj(3,2)
 )))
 
