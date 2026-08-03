@@ -93,7 +93,7 @@ class Tuple(PrimitiveRecursive):
 
     def __str__(self) -> str:
         args_str = f"x1,...,x{self.ninputs}"
-        return f"{args_str} -> (f1({args_str}),...,f{len(self.fs)}({args_str}))"
+        return f"{args_str} -> ({self.fs[0]}({args_str}),...,{self.fs[-1]}({args_str}))"
 
 def Constant(n: int, k: int) -> PrimitiveRecursive:
     if n == 0:
@@ -182,3 +182,5 @@ Div = Ro(Zero(), Composition(If, Tuple(
 
 for i in range(0, 30):
     assert Div(i,5) == int(i / 5)
+
+print(Sum)
