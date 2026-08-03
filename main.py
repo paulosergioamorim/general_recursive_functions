@@ -1,4 +1,4 @@
-class PrimitiveRecursive:
+class GeneralRecursive:
     ninputs = 1
     noutputs = 1
 
@@ -6,6 +6,10 @@ class PrimitiveRecursive:
         args = args
         kargs = kargs
         raise NotImplementedError()
+
+
+class PrimitiveRecursive(GeneralRecursive):
+    pass
 
 
 """
@@ -59,12 +63,12 @@ ZeroNoArgs = Constant(0, 0)
 
 
 """
-Primitive Recursive Operators: Composition and Ro
+Primitive Recursive Operators: Composition and Rho
 """
 
 
-class Composition(PrimitiveRecursive):
-    def __init__(self, g: PrimitiveRecursive, h: PrimitiveRecursive):
+class Composition(GeneralRecursive):
+    def __init__(self, g: GeneralRecursive, h: GeneralRecursive):
         assert h.noutputs == g.ninputs
         self.g = g
         self.h = h
@@ -78,8 +82,8 @@ class Composition(PrimitiveRecursive):
         return f"({self.g} . {self.h})"
 
 
-class Rho(PrimitiveRecursive):
-    def __init__(self, g: PrimitiveRecursive, h: PrimitiveRecursive):
+class Rho(GeneralRecursive):
+    def __init__(self, g: GeneralRecursive, h: GeneralRecursive):
         assert g.ninputs + 2 == h.ninputs
         self.g = g
         self.h = h
@@ -96,12 +100,12 @@ class Rho(PrimitiveRecursive):
         return f"\u03c1({self.g}, {self.h})"
 
 
-class Tuple(PrimitiveRecursive):
+class Tuple(GeneralRecursive):
     """
-    Primitive recursive function that returns multiple values
+    General recursive function that returns multiple values
     """
 
-    def __init__(self, *fs: PrimitiveRecursive):
+    def __init__(self, *fs: GeneralRecursive):
         for f in fs:
             assert f.ninputs == fs[0].ninputs
         self.fs = fs
@@ -114,6 +118,22 @@ class Tuple(PrimitiveRecursive):
     def __str__(self) -> str:
         outputs_str = ", ".join([f"{f}" for f in self.fs])
         return f"({outputs_str})"
+
+
+class Mi(GeneralRecursive):
+    def __init__(self, f: GeneralRecursive):
+        self.f = f
+        self.ninputs = f.ninputs - 1
+
+    def __call__(self, *xs: int) -> int:
+        assert len(xs) == self.ninputs
+        z = 0
+        while self.f(*[z, *xs]) != 0:
+            z += 1
+        return z
+
+    def __str__(self) -> str:
+        return f"\u00b5({self.f})"
 
 
 Sum = Rho(Proj(1, 1), Composition(Successor(), Proj(3, 2)))
@@ -262,5 +282,30 @@ Div3 = Composition(Div, Tuple(Proj(1, 1), Constant(1, 3)))
 for i in range(0, 30):
     assert Div3(i) == int(i / 3)
 
+Isqrt = Mi(
+    Composition(
+        Not,
+        Composition(
+            Gt,
+            Tuple(
+                Composition(
+                    Mul,
+                    Tuple(
+                        Composition(Successor(), Proj(2, 1)),
+                        Composition(Successor(), Proj(2, 1)),
+                    ),
+                ),
+                Proj(2, 2),
+            ),
+        ),
+    )
+)
+
+assert Isqrt(50) == 7
+assert Isqrt(49) == 7
+assert Isqrt(48) == 6
+
+NotHalt = Mi(Constant(1, 1))
+# NotHalt()
 
 print(Sub)
