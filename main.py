@@ -122,6 +122,7 @@ class Tuple(GeneralRecursive):
 
 class Mi(GeneralRecursive):
     def __init__(self, f: GeneralRecursive):
+        assert(f.ninputs) >= 1
         self.f = f
         self.ninputs = f.ninputs - 1
 
