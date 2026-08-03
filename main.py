@@ -252,4 +252,15 @@ Div = Ro(
 for i in range(0, 30):
     assert Div(i, 5) == int(i / 5)
 
+Mod2 = Composition(Rest, Tuple(Proj(1, 1), Constant(1, 2)))
+
+for i in range(0, 30):
+    assert Mod2(i) == i % 2
+
+Div3 = Composition(Div, Tuple(Proj(1, 1), Constant(1, 3)))
+
+for i in range(0, 30):
+    assert Div3(i) == int(i / 3)
+
+
 print(Sub)
