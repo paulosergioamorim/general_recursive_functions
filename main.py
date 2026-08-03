@@ -78,7 +78,7 @@ class Composition(PrimitiveRecursive):
         return f"({self.g} . {self.h})"
 
 
-class Ro(PrimitiveRecursive):
+class Rho(PrimitiveRecursive):
     def __init__(self, g: PrimitiveRecursive, h: PrimitiveRecursive):
         assert g.ninputs + 2 == h.ninputs
         self.g = g
@@ -116,26 +116,26 @@ class Tuple(PrimitiveRecursive):
         return f"({outputs_str})"
 
 
-Sum = Ro(Proj(1, 1), Composition(Successor(), Proj(3, 2)))
+Sum = Rho(Proj(1, 1), Composition(Successor(), Proj(3, 2)))
 assert Sum(3, 5) == 8
 
-Pred = Ro(Constant(0, 0), Proj(2, 1))
+Pred = Rho(Constant(0, 0), Proj(2, 1))
 assert Pred(0) == 0
 assert Pred(2) == 1
 
 Swap = Tuple(Proj(2, 2), Proj(2, 1))
 assert Swap(1, 2) == (2, 1)
 
-RSub = Ro(Proj(1, 1), Composition(Pred, Proj(3, 2)))
+RSub = Rho(Proj(1, 1), Composition(Pred, Proj(3, 2)))
 Sub = Composition(RSub, Swap)
 assert Sub(4, 9) == 0
 assert Sub(9, 4) == 5
 
-Mul = Ro(Constant(1, 0), Composition(Sum, Tuple(Proj(3, 2), Proj(3, 3))))
+Mul = Rho(Constant(1, 0), Composition(Sum, Tuple(Proj(3, 2), Proj(3, 3))))
 assert Mul(5, 6) == 30
 assert Mul(5, 0) == 0
 
-If = Ro(Proj(2, 2), Proj(4, 3))
+If = Rho(Proj(2, 2), Proj(4, 3))
 assert If(0, 8, 9) == 9
 assert If(1, 8, 9) == 8
 
@@ -151,12 +151,12 @@ assert Or(0, 1) == 1
 assert Or(1, 0) == 1
 assert Or(1, 1) == 1
 
-IsZero = Ro(Constant(0, 1), Constant(2, 0))
+IsZero = Rho(Constant(0, 1), Constant(2, 0))
 Not = IsZero
 assert IsZero(0) == 1
 assert IsZero(1) == 0
 
-RExp = Ro(Constant(1, 1), Composition(Mul, Tuple(Proj(3, 2), Proj(3, 3))))
+RExp = Rho(Constant(1, 1), Composition(Mul, Tuple(Proj(3, 2), Proj(3, 3))))
 Exp = Composition(RExp, Swap)
 assert Exp(2, 6) == 64
 assert Exp(2, 0) == 1
@@ -210,13 +210,13 @@ assert Xnor(1, 0) == 0
 assert Xnor(0, 1) == 0
 assert Xnor(1, 1) == 1
 
-Fac = Ro(
+Fac = Rho(
     Constant(0, 1),
     Composition(Mul, Tuple(Composition(Successor(), Proj(2, 1)), Proj(2, 2))),
 )
 assert Fac(6) == 720
 
-Rest = Ro(
+Rest = Rho(
     Constant(1, 0),
     Composition(
         If,
@@ -231,7 +231,7 @@ Rest = Ro(
 for i in range(0, 30):
     assert Rest(i, 5) == i % 5
 
-Div = Ro(
+Div = Rho(
     Constant(1, 0),
     Composition(
         If,
