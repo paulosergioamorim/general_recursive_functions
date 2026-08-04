@@ -226,6 +226,45 @@ assert IsZero(0) == 1
 assert IsZero(1) == 0
 
 """
+Xor(x,y) = Or(And(x,Not(y)), And(y,Not(x)))
+"""
+Xor = Composition(
+    Or,
+    Composition(
+        And,
+        Proj(2, 1),
+        Composition(Not, Proj(2, 2)),
+    ),
+    Composition(
+        And,
+        Proj(2, 2),
+        Composition(Not, Proj(2, 1)),
+    ),
+)
+assert Xor(0, 0) == 0
+assert Xor(0, 1) == 1
+assert Xor(1, 0) == 1
+assert Xor(1, 1) == 0
+
+Nand = Composition(Not, And)
+assert Nand(0, 0) == 1
+assert Nand(1, 0) == 1
+assert Nand(0, 1) == 1
+assert Nand(1, 1) == 0
+
+Nor = Composition(Not, Or)
+assert Nor(0, 0) == 1
+assert Nor(1, 0) == 0
+assert Nor(0, 1) == 0
+assert Nor(1, 1) == 0
+
+Xnor = Composition(Not, Xor)
+assert Xnor(0, 0) == 1
+assert Xnor(1, 0) == 0
+assert Xnor(0, 1) == 0
+assert Xnor(1, 1) == 1
+
+"""
 RExp(0,y)   = y**0 = 1
 RExp(x+1,y) = y**(x+1) = y**x * y = Mul(RExp(x,y), y)
 """
@@ -261,30 +300,6 @@ Gt = Composition(Less, *Swap)
 assert Gt(9, 8) == 1
 assert Gt(8, 9) == 0
 assert Gt(8, 8) == 0
-
-Xor = Composition(And, Or, Composition(Not, Eq))
-assert Xor(0, 0) == 0
-assert Xor(0, 1) == 1
-assert Xor(1, 0) == 1
-assert Xor(1, 1) == 0
-
-Nand = Composition(Not, And)
-assert Nand(0, 0) == 1
-assert Nand(1, 0) == 1
-assert Nand(0, 1) == 1
-assert Nand(1, 1) == 0
-
-Nor = Composition(Not, Or)
-assert Nor(0, 0) == 1
-assert Nor(1, 0) == 0
-assert Nor(0, 1) == 0
-assert Nor(1, 1) == 0
-
-Xnor = Composition(Not, Xor)
-assert Xnor(0, 0) == 1
-assert Xnor(1, 0) == 0
-assert Xnor(0, 1) == 0
-assert Xnor(1, 1) == 1
 
 """
 Fac(0)   = 1
