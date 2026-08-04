@@ -4,6 +4,19 @@ class GeneralRecursive:
     def __call__(self, *_: int) -> int:
         raise NotImplementedError()
 
+    def is_primitive_recursive(self) -> bool:
+        if isinstance(self, PrimitiveRecursive):
+            return True
+        if isinstance(self, Mi):
+            return False
+        if isinstance(self, Rho):
+            return self.h.is_primitive_recursive() and self.g.is_primitive_recursive()
+        if isinstance(self, Composition):
+            return self.h.is_primitive_recursive() and all(
+                [g.is_primitive_recursive() for g in self.gs]
+            )
+        raise ValueError("Unreachble")
+
 
 class PrimitiveRecursive(GeneralRecursive):
     pass
@@ -391,3 +404,12 @@ assert DoubleIt(0) == 0
 assert DoubleIt(8) == 16
 
 print(Sub)
+
+assert all(
+    [
+        f.is_primitive_recursive() == True
+        for f in [Sum, Pred, Sub, Mul, Exp, If, Eq, Leq, Rest, Div]
+    ]
+)
+assert Isqrt.is_primitive_recursive() == False
+assert NotHalt.is_primitive_recursive() == False
