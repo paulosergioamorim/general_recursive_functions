@@ -19,10 +19,10 @@ Basic Primitive Recursive Functions Set
 
 
 class Successor(PrimitiveRecursive):
+    """
+    S(x) = x+1
+    """
     def __call__(self, *xs: int) -> int:
-        """
-        S(x) = x+1
-        """
         assert len(xs) == 1
         assert xs[0] >= 0
         return xs[0] + 1
@@ -32,20 +32,18 @@ class Successor(PrimitiveRecursive):
 
 
 class Constant(PrimitiveRecursive):
+    """
+    n: n-ary function
+    k: non-negative integer to be returned
+    C^n_k(x1,...,xn) = k
+    """
     def __init__(self, n: int, k: int):
-        """
-        n: n-ary function
-        k: non-negative integer to be returned
-        """
         assert n >= 0
         assert k >= 0
         self.ninputs = n
         self.k = k
 
     def __call__(self, *xs: int) -> int:
-        """
-        C^n_k(x1,...,xn) = k
-        """
         assert len(xs) == self.ninputs
         return self.k
 
@@ -54,19 +52,17 @@ class Constant(PrimitiveRecursive):
 
 
 class Proj(PrimitiveRecursive):
+    """
+    n: n-ary function
+    i: 1-index based argument to be returned
+    P^n_i(x1,...,xn) = xi
+    """
     def __init__(self, n: int, i: int):
-        """
-        n: n-ary function
-        i: 1-index based argument to be returned
-        """
         assert i >= 1 and i <= n
         self.ninputs = n
         self.i = i
 
     def __call__(self, *xs: int) -> int:
-        """
-        P^n_i(x1,...,xn) = xi
-        """
         assert len(xs) == self.ninputs
         return xs[self.i - 1]
 
@@ -87,11 +83,12 @@ Primitive Recursive Operators: Composition and Rho
 
 
 class Composition(GeneralRecursive):
+    """
+    h: n-ary function
+    gs: n k-ary functions
+    f(x1,...,xk) = h(g1(x1,...,xk),...,gn(x1,...,xk))
+    """
     def __init__(self, h: GeneralRecursive, *gs: GeneralRecursive):
-        """
-        h: n-ary function
-        gs: n k-ary functions
-        """
         assert len(gs) == h.ninputs
         for g in gs:
             assert g.ninputs == gs[0].ninputs
@@ -100,9 +97,6 @@ class Composition(GeneralRecursive):
         self.ninputs = gs[0].ninputs
 
     def __call__(self, *xs: int) -> int:
-        """
-        f(x1,...,xk) = h(g1(x1,...,xk),...,gn(x1,...,xk))
-        """
         return self.h(*(g(*xs) for g in self.gs))
 
     def __str__(self) -> str:
@@ -117,22 +111,20 @@ class Composition(GeneralRecursive):
 
 
 class Rho(GeneralRecursive):
+    """
+    g: n-ary function
+    h: (n+2)-ary function
+    f(x,y1,...,yn) =
+        g(y1,...,yn)                      , if x == 0
+        h(x-1,f(x-1,y1,...,yn),y1,...,yn) , otherwise
+    """
     def __init__(self, g: GeneralRecursive, h: GeneralRecursive):
-        """
-        g: n-ary function
-        h: (n+2)-ary function
-        """
         assert g.ninputs + 2 == h.ninputs
         self.g = g
         self.h = h
         self.ninputs = g.ninputs + 1
 
     def __call__(self, *xs: int) -> int:
-        """
-        f(x,y1,...,yn) =
-            g(y1,...,yn)                      , if x == 0
-            h(x-1,f(x-1,y1,...,yn),y1,...,yn) , otherwise
-        """
         return (
             self.g(*xs[1:])
             if xs[0] == 0
@@ -152,18 +144,18 @@ Mi-Recursive Operator
 
 
 class Mi(GeneralRecursive):
+    """
+    f: (n+1)-ary function
+    mi(f)(x1,...,xn) = max z st. 
+        f(z',x1,...,xn) > 0 for z' < z and 
+        f(z,x1,...,xn) = 0
+    """
     def __init__(self, f: GeneralRecursive):
-        """
-        f: (n+1)-ary function
-        """
         assert (f.ninputs) >= 1
         self.f = f
         self.ninputs = f.ninputs - 1
 
     def __call__(self, *xs: int) -> int:
-        """
-        mi(f)(x1,...,xn) = max z st. f(z',x1,...,xn) > 0 for z' < z and f(z,x1,...,xn) = 0
-        """
         z = 0
         while self.f(*[z, *xs]) != 0:
             z += 1
