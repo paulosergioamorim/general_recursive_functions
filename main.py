@@ -5,21 +5,12 @@ class GeneralRecursive:
         raise NotImplementedError()
 
     def is_primitive_recursive(self) -> bool:
-        if isinstance(self, PrimitiveRecursive):
-            return True
-        if isinstance(self, Mi):
-            return False
-        if isinstance(self, Rho):
-            return self.h.is_primitive_recursive() and self.g.is_primitive_recursive()
-        if isinstance(self, Composition):
-            return self.h.is_primitive_recursive() and all(
-                [g.is_primitive_recursive() for g in self.gs]
-            )
-        raise ValueError("Unreachable")
+        raise NotImplementedError()
 
 
 class PrimitiveRecursive(GeneralRecursive):
-    pass
+    def is_primitive_recursive(self) -> bool:
+        return True
 
 
 """
@@ -119,6 +110,11 @@ class Composition(GeneralRecursive):
             return f"({self.h} . {self.gs[0]})"
         return f"({self.h} . ({', '.join([str(g) for g in self.gs])}))"
 
+    def is_primitive_recursive(self) -> bool:
+        return self.h.is_primitive_recursive() and all(
+            [g.is_primitive_recursive() for g in self.gs]
+        )
+
 
 class Rho(GeneralRecursive):
     def __init__(self, g: GeneralRecursive, h: GeneralRecursive):
@@ -146,6 +142,9 @@ class Rho(GeneralRecursive):
     def __str__(self) -> str:
         return f"\u03c1({self.g}, {self.h})"
 
+    def is_primitive_recursive(self) -> bool:
+        return self.h.is_primitive_recursive() and self.g.is_primitive_recursive()
+
 
 """
 Mi-Recursive Operator
@@ -172,6 +171,9 @@ class Mi(GeneralRecursive):
 
     def __str__(self) -> str:
         return f"\u00b5({self.f})"
+
+    def is_primitive_recursive(self) -> bool:
+        return False
 
 
 """
@@ -407,9 +409,9 @@ print(Sub)
 
 assert all(
     [
-        f.is_primitive_recursive() == True
+        f.is_primitive_recursive()
         for f in [Sum, Pred, Sub, Mul, Exp, If, Eq, Leq, Rest, Div]
     ]
 )
-assert Isqrt.is_primitive_recursive() == False
-assert NotHalt.is_primitive_recursive() == False
+assert not Isqrt.is_primitive_recursive()
+assert not NotHalt.is_primitive_recursive()
