@@ -15,7 +15,7 @@ class GeneralRecursive:
             return self.h.is_primitive_recursive() and all(
                 [g.is_primitive_recursive() for g in self.gs]
             )
-        raise ValueError("Unreachble")
+        raise ValueError("Unreachable")
 
 
 class PrimitiveRecursive(GeneralRecursive):
