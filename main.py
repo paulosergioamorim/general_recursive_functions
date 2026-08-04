@@ -152,7 +152,6 @@ class Mi(GeneralRecursive):
         """
         mi(f)(x1,...,xn) = max z st. f(z',x1,...,xn) > 0 for z' < z and f(z,x1,...,xn) = 0
         """
-        assert len(xs) == self.ninputs
         z = 0
         while self.f(*[z, *xs]) != 0:
             z += 1
