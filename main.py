@@ -104,7 +104,7 @@ class Composition(GeneralRecursive):
     def __str__(self) -> str:
         if len(self.gs) == 1:
             return f"({self.h} . {self.gs[0]})"
-        return f"({self.h} . ({', '.join([str(g) for g in self.gs])})"
+        return f"({self.h} . ({', '.join([str(g) for g in self.gs])}))"
 
 
 class Rho(GeneralRecursive):
