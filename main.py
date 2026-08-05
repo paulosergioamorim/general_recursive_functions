@@ -1,5 +1,5 @@
 class GeneralRecursive:
-    ninputs = 1
+    ninputs: int
 
     def __call__(self, *_: int) -> int:
         raise NotImplementedError()
@@ -22,8 +22,11 @@ class Successor(PrimitiveRecursive):
     """
     S(x) = x+1
     """
+    def __init__(self):
+        self.ninputs = 1
+
     def __call__(self, *xs: int) -> int:
-        assert len(xs) == 1
+        assert len(xs) == self.ninputs
         assert xs[0] >= 0
         return xs[0] + 1
 
