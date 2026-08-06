@@ -1,3 +1,9 @@
+import math
+import sys
+
+sys.setrecursionlimit(1_000_000)
+
+
 class GeneralRecursive:
     ninputs: int
 
@@ -363,37 +369,35 @@ Div = Rho(
         Proj(3, 2),
     ),
 )
-
-for i in range(0, 30):
-    assert Div(i, 5) == int(i / 5)
+assert all([Div(i, 5) == int(i / 5) for i in range(30)])
 
 Mod2 = Composition(Rest, Proj(1, 1), Constant(1, 2))
-
-for i in range(0, 30):
-    assert Mod2(i) == i % 2
+assert all([Mod2(i) == i % 2 for i in range(30)])
 
 Div3 = Composition(Div, Proj(1, 1), Constant(1, 3))
+assert all([Div3(i) == int(i / 3) for i in range(30)])
 
-for i in range(0, 30):
-    assert Div3(i) == int(i / 3)
+IsEven = Composition(IsZero, Mod2)
+assert all([IsEven(2 * n) for n in range(10)])
+
+IsOdd = Composition(Not, IsEven)
+assert all([IsOdd(2 * n + 1) for n in range(10)])
 
 """
-Isqrt(x) = max z st. z**2 <= x.
-Incrementa z enquanto (z+1)**2 é <= que a entrada, quando falha, retorna z
+Incrementa z enquanto z**2 é <= que a entrada, quando falha, retorna z-1
 """
-Isqrt = Mi(
-    Composition(
-        Leq,
-        Composition(Exp, Composition(Successor(), Proj(2, 1)), Constant(2, 2)),
-        Proj(2, 2),
-    )
+Isqrt = Composition(
+    Sub,
+    Mi(
+        Composition(
+            Leq,
+            Composition(Exp, Proj(2, 1), Constant(2, 2)),
+            Proj(2, 2),
+        )
+    ),
+    Constant(1, 1),
 )
-
-assert Isqrt(50) == 7
-assert Isqrt(49) == 7
-assert Isqrt(48) == 6
-assert Isqrt(9) == 3
-assert Isqrt(100) == 10
+assert all([Isqrt(i) == int(math.sqrt(i)) for i in range(50)])
 
 """
 Não existe z tal que C^1_1 retorne 0.
@@ -406,6 +410,92 @@ DoubleIt = Composition(Sum, Proj(1, 1), Proj(1, 1))
 assert DoubleIt(0) == 0
 assert DoubleIt(8) == 16
 
+Max = Composition(If, Leq, Proj(2, 2), Proj(2, 1))
+assert Max(2, 3) == 3
+assert Max(3, 2) == 3
+assert Max(2, 2) == 2
+
+Min = Composition(If, Leq, Proj(2, 1), Proj(2, 2))
+assert Min(2, 3) == 2
+assert Min(3, 2) == 2
+assert Min(2, 2) == 2
+
+# Mínimo Múltiplo Comum (MMC)
+Lcm = Composition(
+    If,
+    Composition(IsZero, Composition(Min, Proj(2, 1), Proj(2, 2))),
+    Constant(2, 0),
+    Composition(
+        Sum,
+        Composition(Max, Proj(2, 1), Proj(2, 2)),
+        Mi(
+            Composition(
+                Nand,
+                Composition(
+                    IsZero,
+                    Composition(
+                        Rest,
+                        Composition(
+                            Sum, Composition(Max, Proj(3, 2), Proj(3, 3)), Proj(3, 1)
+                        ),
+                        Proj(3, 2),
+                    ),
+                ),
+                Composition(
+                    IsZero,
+                    Composition(
+                        Rest,
+                        Composition(
+                            Sum, Composition(Max, Proj(3, 2), Proj(3, 3)), Proj(3, 1)
+                        ),
+                        Proj(3, 3),
+                    ),
+                ),
+            )
+        ),
+    ),
+)
+
+# Máximo Divisor Comum (MDC)
+Gcd = Composition(
+    If,
+    Composition(IsZero, Composition(Min, Proj(2, 1), Proj(2, 2))),
+    Composition(Max, Proj(2, 1), Proj(2, 2)),
+    Composition(
+        Sub,
+        Proj(2, 1),
+        Mi(
+            Composition(
+                Nand,
+                Composition(
+                    IsZero,
+                    Composition(
+                        Rest, Proj(3, 2), Composition(Sub, Proj(3, 2), Proj(3, 1))
+                    ),
+                ),
+                Composition(
+                    IsZero,
+                    Composition(
+                        Rest, Proj(3, 3), Composition(Sub, Proj(3, 2), Proj(3, 1))
+                    ),
+                ),
+            )
+        ),
+    ),
+)
+
+assert Lcm(8, 21) == math.lcm(8, 21)
+assert Lcm(8, 8) == math.lcm(8, 8)
+assert Lcm(0, 8) == math.lcm(0, 8)
+assert Lcm(8, 0) == math.lcm(8, 0)
+assert Lcm(0, 0) == math.lcm(0, 0)
+
+assert Gcd(45, 89) == math.gcd(45, 89)
+assert Gcd(8, 8) == math.gcd(8, 8)
+assert Gcd(0, 8) == math.gcd(0, 8)
+assert Gcd(8, 0) == math.gcd(8, 0)
+assert Gcd(0, 0) == math.gcd(0, 0)
+
 print(Sub)
 
 assert all(
@@ -414,5 +504,5 @@ assert all(
         for f in [Sum, Pred, Sub, Mul, Exp, If, Eq, Leq, Rest, Div]
     ]
 )
-assert not Isqrt.is_primitive_recursive()
-assert not NotHalt.is_primitive_recursive()
+
+assert all([not f.is_primitive_recursive() for f in [Isqrt, NotHalt, Lcm, Gcd]])
