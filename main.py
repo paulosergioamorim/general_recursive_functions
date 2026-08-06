@@ -76,6 +76,7 @@ class Proj(PrimitiveRecursive):
 
     def __call__(self, *xs: int) -> int:
         assert len(xs) == self.ninputs
+        assert all([x >= 0 for x in xs])
         return xs[self.i - 1]
 
     def __str__(self) -> str:
@@ -347,8 +348,7 @@ Rest = Rho(
     ),
 )
 
-for i in range(0, 30):
-    assert Rest(i, 5) == i % 5
+assert all([Rest(i, 5) == i % 5 for i in range(0, 30)])
 
 """
 Div(0,y)   = 0
