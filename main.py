@@ -22,6 +22,7 @@ class Successor(PrimitiveRecursive):
     """
     S(x) = x+1
     """
+
     def __init__(self):
         self.ninputs = 1
 
@@ -36,10 +37,11 @@ class Successor(PrimitiveRecursive):
 
 class Constant(PrimitiveRecursive):
     """
-    n: n-ary function
+    n: number of args
     k: non-negative integer to be returned
     C^n_k(x1,...,xn) = k
     """
+
     def __init__(self, n: int, k: int):
         assert n >= 0
         assert k >= 0
@@ -56,10 +58,11 @@ class Constant(PrimitiveRecursive):
 
 class Proj(PrimitiveRecursive):
     """
-    n: n-ary function
+    n: number of args
     i: 1-index based argument to be returned
     P^n_i(x1,...,xn) = xi
     """
+
     def __init__(self, n: int, i: int):
         assert i >= 1 and i <= n
         self.ninputs = n
@@ -91,6 +94,7 @@ class Composition(GeneralRecursive):
     gs: n k-ary functions
     f(x1,...,xk) = h(g1(x1,...,xk),...,gn(x1,...,xk))
     """
+
     def __init__(self, h: GeneralRecursive, *gs: GeneralRecursive):
         assert len(gs) == h.ninputs
         for g in gs:
@@ -121,6 +125,7 @@ class Rho(GeneralRecursive):
         g(y1,...,yn)                      , if x == 0
         h(x-1,f(x-1,y1,...,yn),y1,...,yn) , otherwise
     """
+
     def __init__(self, g: GeneralRecursive, h: GeneralRecursive):
         assert g.ninputs + 2 == h.ninputs
         self.g = g
@@ -149,10 +154,11 @@ Mi-Recursive Operator
 class Mi(GeneralRecursive):
     """
     f: (n+1)-ary function
-    mi(f)(x1,...,xn) = max z st. 
-        f(z',x1,...,xn) > 0 for z' < z and 
-        f(z,x1,...,xn) = 0
+    mi(f)(x1,...,xn) = min z st.
+        f(z',x1,...,xn) > 0 for z' < z and
+        f(z ,x1,...,xn) = 0
     """
+
     def __init__(self, f: GeneralRecursive):
         assert (f.ninputs) >= 1
         self.f = f
