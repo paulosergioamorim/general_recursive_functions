@@ -289,7 +289,7 @@ assert Exp(2, 6) == 64
 assert Exp(2, 0) == 1
 
 """
-Leq(x,y) = 0 <=> Sub(x,y) = 0
+Leq(x,y) = 1 <=> Sub(x,y) = 0
 """
 Leq = Composition(IsZero, Sub)
 assert Leq(9, 8) == 0
