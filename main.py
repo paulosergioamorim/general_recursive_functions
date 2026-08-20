@@ -103,9 +103,9 @@ class Composition(GeneralRecursive):
     """
 
     def __init__(self, h: GeneralRecursive, *gs: GeneralRecursive):
+        assert h.ninputs >= 1
         assert len(gs) == h.ninputs
-        for g in gs:
-            assert g.ninputs == gs[0].ninputs
+        assert all([g.ninputs == gs[0].ninputs for g in gs])
         self.h = h
         self.gs = gs
         self.ninputs = gs[0].ninputs
